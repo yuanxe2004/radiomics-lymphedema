@@ -2,6 +2,10 @@
 # 6. 特征筛选
 
 
+from .config import *
+from .utils import FeatureSelectionResult, feature_family
+
+
 def pearson_filter_by_train(x_train_scaled, feature_names, threshold=0.90):
     if len(feature_names) <= 1:
         return list(feature_names)
