@@ -79,13 +79,25 @@ def calc_binary_metrics_point(y_true, y_pred, y_prob, positive_label, labels_sor
     }
 
 
-def bootstrap_ci_binary_metrics(y_true, y_pred, y_prob, positive_label, labels_sorted, n_bootstrap=2000, alpha=0.05, random_state=42):
+def _cluster_bootstrap_indices(group_ids, rng):
+    group_ids = np.asarray(group_ids)
+    unique_groups = pd.unique(group_ids)
+    sampled_groups = rng.choice(unique_groups, size=len(unique_groups), replace=True)
+    return np.concatenate([np.where(group_ids == group_id)[0] for group_id in sampled_groups])
+
+
+def bootstrap_ci_binary_metrics(y_true, y_pred, y_prob, positive_label, labels_sorted, group_ids=None, n_bootstrap=1000, alpha=0.05, random_state=42):
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     y_prob = np.asarray(y_prob, dtype=float)
 
     n = len(y_true)
     rng = np.random.default_rng(random_state)
+
+    if group_ids is not None:
+        group_ids = np.asarray(group_ids)
+        if len(group_ids) != n or pd.isna(group_ids).any():
+            group_ids = None
 
     boot_values = {
         "ACC": [],
@@ -116,7 +128,10 @@ def bootstrap_ci_binary_metrics(y_true, y_pred, y_prob, positive_label, labels_s
     }
 
     for _ in range(n_bootstrap):
-        idx = rng.choice(np.arange(n), size=n, replace=True)
+        if group_ids is None:
+            idx = rng.choice(np.arange(n), size=n, replace=True)
+        else:
+            idx = _cluster_bootstrap_indices(group_ids, rng)
         m = calc_binary_metrics_point(
             y_true=y_true[idx],
             y_pred=y_pred[idx],
@@ -139,12 +154,13 @@ def bootstrap_ci_binary_metrics(y_true, y_pred, y_prob, positive_label, labels_s
             ci_result[f"{k}_high"] = np.percentile(values, 100 * (1 - alpha / 2))
 
     ci_result["Bootstrap_times"] = n_bootstrap
+    ci_result["Bootstrap_unit"] = "patient_cluster" if group_ids is not None else "row"
     ci_result["Bootstrap_valid_times_AUC"] = len(boot_values["AUC"])
     ci_result["Bootstrap_valid_times_CalSlope"] = len(boot_values["Calibration_slope"])
     return ci_result
 
 
-def calc_binary_metrics_with_ci(y_true, y_pred, y_prob, positive_label, labels_sorted, n_bootstrap=N_BOOTSTRAP, alpha=CI_ALPHA, random_state=RANDOM_STATE):
+def calc_binary_metrics_with_ci(y_true, y_pred, y_prob, positive_label, labels_sorted, group_ids=None, n_bootstrap=N_BOOTSTRAP, alpha=CI_ALPHA, random_state=RANDOM_STATE):
     point = calc_binary_metrics_point(
         y_true=y_true,
         y_pred=y_pred,
@@ -159,6 +175,7 @@ def calc_binary_metrics_with_ci(y_true, y_pred, y_prob, positive_label, labels_s
         y_prob=y_prob,
         positive_label=positive_label,
         labels_sorted=labels_sorted,
+        group_ids=group_ids,
         n_bootstrap=n_bootstrap,
         alpha=alpha,
         random_state=random_state,
@@ -192,6 +209,7 @@ def calc_binary_metrics_with_ci(y_true, y_pred, y_prob, positive_label, labels_s
         "FN": point["FN"],
         "TP": point["TP"],
         "Bootstrap_times": ci["Bootstrap_times"],
+        "Bootstrap_unit": ci["Bootstrap_unit"],
         "Bootstrap_valid_times_AUC": ci["Bootstrap_valid_times_AUC"],
         "Bootstrap_valid_times_CalSlope": ci["Bootstrap_valid_times_CalSlope"],
     }
