@@ -135,7 +135,7 @@ def run_all_tasks(df, radiomics_cols, morph_cols, analysis_label="Primary"):
             global_eval["internal_row"]["PPV"], global_eval["internal_row"]["Sensitivity"],
             global_eval["internal_row"]["Specificity"], global_eval["internal_row"]["F1"],
             global_eval["internal_row"]["Brier"], global_eval["internal_row"]["Calibration_slope"],
-            len(global_eval["wrong_df"][global_eval["wrong_df"]["数据集"] == "Internal_test_center134_20percent"]),
+            len(global_eval["wrong_df"][global_eval["wrong_df"]["数据集"] == "Internal_test_development_20percent"]),
         )
         logging.info(
             "全局最优外部测试：AUC=%s ACC=%s PPV=%s Sens=%s Spec=%s F1=%s Brier=%s CalSlope=%s | 错误例数=%d",
@@ -143,7 +143,7 @@ def run_all_tasks(df, radiomics_cols, morph_cols, analysis_label="Primary"):
             global_eval["external_row"]["PPV"], global_eval["external_row"]["Sensitivity"],
             global_eval["external_row"]["Specificity"], global_eval["external_row"]["F1"],
             global_eval["external_row"]["Brier"], global_eval["external_row"]["Calibration_slope"],
-            len(global_eval["wrong_df"][global_eval["wrong_df"]["数据集"] == "External_test_center2"]),
+            len(global_eval["wrong_df"][global_eval["wrong_df"]["数据集"] == "External_test_independent"]),
         )
 
         # 3. 评估三种特征集各自的最佳模型。
@@ -212,7 +212,7 @@ def run_all_tasks(df, radiomics_cols, morph_cols, analysis_label="Primary"):
                 fs_eval["internal_row"]["Specificity"],
                 fs_eval["internal_row"]["F1"],
                 fs_eval["internal_row"]["Brier"],
-                len(fs_eval["wrong_df"][fs_eval["wrong_df"]["数据集"] == "Internal_test_center134_20percent"]),
+                len(fs_eval["wrong_df"][fs_eval["wrong_df"]["数据集"] == "Internal_test_development_20percent"]),
             )
             logging.info(
                 "%s | %s | %s 外部测试：AUC=%s ACC=%s PPV=%s Sens=%s Spec=%s F1=%s Brier=%s | 错误例数=%d",
@@ -226,7 +226,7 @@ def run_all_tasks(df, radiomics_cols, morph_cols, analysis_label="Primary"):
                 fs_eval["external_row"]["Specificity"],
                 fs_eval["external_row"]["F1"],
                 fs_eval["external_row"]["Brier"],
-                len(fs_eval["wrong_df"][fs_eval["wrong_df"]["数据集"] == "External_test_center2"]),
+                len(fs_eval["wrong_df"][fs_eval["wrong_df"]["数据集"] == "External_test_independent"]),
             )
 
     final_metrics_df_raw = pd.DataFrame(final_metrics)
