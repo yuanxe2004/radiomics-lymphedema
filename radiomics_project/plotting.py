@@ -1223,7 +1223,7 @@ def build_wrong_case_table_for_artifact(artifact, split_key):
         y_pred = artifact.internal_pred.copy()
         y_prob = artifact.internal_prob.copy()
         dataset_split = "internal test"
-        dataset_split_raw = "Internal_test_center134_20percent"
+        dataset_split_raw = "Internal_test_development_20percent"
     elif split_key == "external":
         base_df = artifact.external_df.reset_index(drop=True).copy()
         x_df = artifact.x_external_selected.reset_index(drop=True).copy()
@@ -1231,7 +1231,7 @@ def build_wrong_case_table_for_artifact(artifact, split_key):
         y_pred = artifact.external_pred.copy()
         y_prob = artifact.external_prob.copy()
         dataset_split = "external test"
-        dataset_split_raw = "External_test_center2"
+        dataset_split_raw = "External_test_independent"
     else:
         raise ValueError(f"未知 split_key：{split_key}")
 
