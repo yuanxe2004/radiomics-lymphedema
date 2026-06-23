@@ -2,6 +2,9 @@
 # 3. 日志、绘图与基础工具
 
 
+from .config import *
+
+
 def ensure_directories():
     for d in [
         OUTPUT_DIR, PLOT_DIR, SHAP_DIR, ROC_DIR, CAL_DIR, DCA_DIR,
