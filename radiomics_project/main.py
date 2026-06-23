@@ -52,10 +52,20 @@ def parse_args(argv=None):
         action="store_true",
         help="Display matplotlib figures in addition to saving them.",
     )
+    parser.add_argument(
+        "--development-cohort-label",
+        default=None,
+        help="Value in CENTER_COL identifying the development cohort used for train/validation/internal test.",
+    )
+    parser.add_argument(
+        "--external-test-cohort-label",
+        default=None,
+        help="Value in CENTER_COL identifying the independent external test cohort.",
+    )
     return parser.parse_args(argv)
 
 
-def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_analysis=None, show_figures=None):
+def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_analysis=None, show_figures=None, development_cohort_label=None, external_test_cohort_label=None):
     if input_excel:
         _config.EXCEL_FILE = os.path.abspath(input_excel)
 
@@ -64,7 +74,7 @@ def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_anal
 
     _config.SAVE_XLSX = os.path.join(
         _config.OUTPUT_DIR,
-        "binary_classification_center134_7_2_1_center2_external_no_radiomics_shape.xlsx",
+        "binary_classification_development_external_no_radiomics_shape.xlsx",
     )
     _config.PLOT_DIR = os.path.join(_config.OUTPUT_DIR, "plots")
     _config.SHAP_DIR = os.path.join(_config.PLOT_DIR, "shap")
@@ -80,6 +90,12 @@ def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_anal
         _config.RUN_SENSITIVITY_ANALYSIS = bool(run_sensitivity_analysis)
     if show_figures is not None:
         _config.SHOW_FIGURES = bool(show_figures)
+    if development_cohort_label:
+        _config.DEVELOPMENT_COHORT_LABEL = development_cohort_label
+        _config.INTERNAL_CENTER = development_cohort_label
+    if external_test_cohort_label:
+        _config.EXTERNAL_TEST_COHORT_LABEL = external_test_cohort_label
+        _config.EXTERNAL_CENTER = external_test_cohort_label
 
     names = [
         "EXCEL_FILE",
@@ -96,6 +112,10 @@ def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_anal
         "MODEL_PACKAGE_DIR",
         "RUN_SENSITIVITY_ANALYSIS",
         "SHOW_FIGURES",
+        "DEVELOPMENT_COHORT_LABEL",
+        "EXTERNAL_TEST_COHORT_LABEL",
+        "INTERNAL_CENTER",
+        "EXTERNAL_CENTER",
     ]
     modules = [_utils, _data, _cv, _plotting, _pipeline, _sys.modules[__name__]]
     for module in modules:
@@ -111,6 +131,8 @@ def main(argv=None):
         output_dir=args.output_dir,
         run_sensitivity_analysis=args.run_sensitivity_analysis,
         show_figures=args.show_figures,
+        development_cohort_label=args.development_cohort_label,
+        external_test_cohort_label=args.external_test_cohort_label,
     )
 
     if not EXCEL_FILE:
