@@ -2,6 +2,9 @@
 # 7. 模型训练与预测
 
 
+from .config import *
+
+
 def get_model(model_name):
     if model_name == "LogisticRegression":
         return Pipeline([
