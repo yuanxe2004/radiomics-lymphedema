@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radiomics-lymphedema"
+version = "0.1.0"
+description = "Radiomics and morphology modeling pipeline for lower-limb lymphedema staging."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+  { name = "yuanxe2004" }
+]
+dependencies = [
+  "numpy>=1.23",
+  "pandas>=1.5",
+  "scikit-learn>=1.2",
+  "scipy>=1.10",
+  "matplotlib>=3.7",
+  "joblib>=1.2",
+  "openpyxl>=3.1",
+  "xgboost>=1.7",
+  "shap>=0.41",
+  "nibabel>=5.0",
+  "tqdm>=4.64",
+]
+
+[project.optional-dependencies]
+radiomics = ["pyradiomics>=3.0"]
+
+[project.scripts]
+radiomics-lymphedema = "radiomics_project.main:main"
+
+[tool.setuptools.packages.find]
+include = ["radiomics_project*"]
