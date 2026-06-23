@@ -95,7 +95,7 @@ OUTPUT_DIR = os.environ.get(
 )
 SAVE_XLSX = os.path.join(
     OUTPUT_DIR,
-    "binary_classification_center134_7_2_1_center2_external_no_radiomics_shape.xlsx"
+    "binary_classification_development_external_no_radiomics_shape.xlsx"
 )
 
 PLOT_DIR = os.path.join(OUTPUT_DIR, "plots")
@@ -117,8 +117,15 @@ ID_COL = "序号"
 SIDE_COL = "肢体"
 CENTER_COL = "对应中心"
 
-INTERNAL_CENTER = "中心134"
-EXTERNAL_CENTER = "中心2"
+# Cohort labels are intentionally abstract. Map your Excel CENTER_COL values so
+# all development/internal centers share DEVELOPMENT_COHORT_LABEL, and the
+# independent external test cohort uses EXTERNAL_TEST_COHORT_LABEL.
+DEVELOPMENT_COHORT_LABEL = os.environ.get("RADIOMICS_DEVELOPMENT_COHORT_LABEL", "development")
+EXTERNAL_TEST_COHORT_LABEL = os.environ.get("RADIOMICS_EXTERNAL_TEST_COHORT_LABEL", "external")
+
+# Backward-compatible aliases used by the existing pipeline modules.
+INTERNAL_CENTER = DEVELOPMENT_COHORT_LABEL
+EXTERNAL_CENTER = EXTERNAL_TEST_COHORT_LABEL
 
 RANDOM_STATE = 255
 
@@ -130,7 +137,7 @@ USE_GROUP_SPLIT = True
 REMOVE_RADIOMICS_SHAPE_FEATURES = True
 RUN_SENSITIVITY_ANALYSIS = False
 
-N_BOOTSTRAP = 2000
+N_BOOTSTRAP = 1000
 CI_ALPHA = 0.05
 
 CALIBRATION_BINS = 6
