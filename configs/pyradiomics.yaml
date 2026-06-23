@@ -1,0 +1,28 @@
+# PyRadiomics settings matching the manuscript feature-extraction protocol.
+# Images and masks should already be converted to NIfTI and resampled to 1 x 1 x 1 mm.
+setting:
+  binWidth: 25
+  resampledPixelSpacing: null
+  interpolator: sitkBSpline
+  normalize: true
+  normalizeScale: 1
+  removeOutliers: null
+  label: 1
+  force2D: false
+  geometryTolerance: 0.001
+  correctMask: true
+  enableCExtensions: true
+imageType:
+  Original: {}
+  Wavelet:
+    wavelet: coif1
+    level: 1
+  LoG:
+    sigma: [1.0, 2.0, 3.0]
+featureClass:
+  firstorder: []
+  glcm: []
+  glrlm: []
+  glszm: []
+  gldm: []
+  ngtdm: []
