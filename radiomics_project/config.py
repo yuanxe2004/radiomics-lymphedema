@@ -2,6 +2,8 @@
 # 1. 基础配置与导入
 
 
+"""Configuration and shared third-party imports for the radiomics pipeline."""
+
 import os
 import re
 import sys
@@ -83,9 +85,14 @@ else:
 # 2. 路径与全局参数
 
 
-EXCEL_FILE = r"C:\Users\ALIENWARE\OneDrive\work\分类\final_deduplicated_with_new_morph-2.xlsx"
+PACKAGE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-OUTPUT_DIR = r"C:\Users\ALIENWARE\Desktop\train_mould\code\radiomics\drawing\output\2-8"
+EXCEL_FILE = os.environ.get("RADIOMICS_INPUT_EXCEL", "")
+
+OUTPUT_DIR = os.environ.get(
+    "RADIOMICS_OUTPUT_DIR",
+    os.path.join(PACKAGE_ROOT, "outputs"),
+)
 SAVE_XLSX = os.path.join(
     OUTPUT_DIR,
     "binary_classification_center134_7_2_1_center2_external_no_radiomics_shape.xlsx"
