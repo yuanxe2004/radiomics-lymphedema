@@ -2,7 +2,122 @@
 # 15. 主入口
 
 
-def main():
+"""Command-line runner for the radiomics pipeline."""
+
+import argparse
+import os
+import sys as _sys
+
+from . import config as _config
+from . import cv as _cv
+from . import data as _data
+from . import pipeline as _pipeline
+from . import plotting as _plotting
+from . import utils as _utils
+from .config import *
+from .data import identify_feature_columns, read_and_validate_data
+from .pipeline import (
+    run_all_tasks,
+    save_feature_set_best_model_packages,
+    save_global_model_packages,
+    save_results_to_excel,
+)
+from .plotting import generate_plots, generate_top_feature_distribution_analysis, generate_wrong_case_analysis
+from .utils import ensure_directories, set_publication_plot_style, setup_logging
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Run the lower-limb lymphedema radiomics/morphology modeling pipeline.",
+    )
+    parser.add_argument(
+        "-i",
+        "--input-excel",
+        default=None,
+        help="Input Excel table containing labels, center IDs, radiomics features, and morphology features.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-dir",
+        default=None,
+        help="Directory for result workbooks, plots, and model packages. Defaults to ./outputs.",
+    )
+    parser.add_argument(
+        "--run-sensitivity-analysis",
+        action="store_true",
+        help="Also run the sensitivity analysis without diagnostics features.",
+    )
+    parser.add_argument(
+        "--show-figures",
+        action="store_true",
+        help="Display matplotlib figures in addition to saving them.",
+    )
+    return parser.parse_args(argv)
+
+
+def _sync_runtime_config(input_excel=None, output_dir=None, run_sensitivity_analysis=None, show_figures=None):
+    if input_excel:
+        _config.EXCEL_FILE = os.path.abspath(input_excel)
+
+    if output_dir:
+        _config.OUTPUT_DIR = os.path.abspath(output_dir)
+
+    _config.SAVE_XLSX = os.path.join(
+        _config.OUTPUT_DIR,
+        "binary_classification_center134_7_2_1_center2_external_no_radiomics_shape.xlsx",
+    )
+    _config.PLOT_DIR = os.path.join(_config.OUTPUT_DIR, "plots")
+    _config.SHAP_DIR = os.path.join(_config.PLOT_DIR, "shap")
+    _config.ROC_DIR = os.path.join(_config.PLOT_DIR, "roc")
+    _config.CAL_DIR = os.path.join(_config.PLOT_DIR, "calibration")
+    _config.DCA_DIR = os.path.join(_config.PLOT_DIR, "dca")
+    _config.TOP_FEATURE_DISTRIBUTION_DIR = os.path.join(_config.OUTPUT_DIR, "top_feature_distributions")
+    _config.WRONG_CASE_ANALYSIS_DIR = os.path.join(_config.OUTPUT_DIR, "wrong_case_analysis")
+    _config.WRONG_CASE_FIGURE_DIR = os.path.join(_config.WRONG_CASE_ANALYSIS_DIR, "wrong_case_figures")
+    _config.MODEL_PACKAGE_DIR = os.path.join(_config.OUTPUT_DIR, "model_packages")
+
+    if run_sensitivity_analysis is not None:
+        _config.RUN_SENSITIVITY_ANALYSIS = bool(run_sensitivity_analysis)
+    if show_figures is not None:
+        _config.SHOW_FIGURES = bool(show_figures)
+
+    names = [
+        "EXCEL_FILE",
+        "OUTPUT_DIR",
+        "SAVE_XLSX",
+        "PLOT_DIR",
+        "SHAP_DIR",
+        "ROC_DIR",
+        "CAL_DIR",
+        "DCA_DIR",
+        "TOP_FEATURE_DISTRIBUTION_DIR",
+        "WRONG_CASE_ANALYSIS_DIR",
+        "WRONG_CASE_FIGURE_DIR",
+        "MODEL_PACKAGE_DIR",
+        "RUN_SENSITIVITY_ANALYSIS",
+        "SHOW_FIGURES",
+    ]
+    modules = [_utils, _data, _cv, _plotting, _pipeline, _sys.modules[__name__]]
+    for module in modules:
+        for name in names:
+            if hasattr(_config, name):
+                setattr(module, name, getattr(_config, name))
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    _sync_runtime_config(
+        input_excel=args.input_excel,
+        output_dir=args.output_dir,
+        run_sensitivity_analysis=args.run_sensitivity_analysis,
+        show_figures=args.show_figures,
+    )
+
+    if not EXCEL_FILE:
+        raise SystemExit("Input Excel file is required. Pass --input-excel or set RADIOMICS_INPUT_EXCEL.")
+    if not os.path.exists(EXCEL_FILE):
+        raise FileNotFoundError(f"Input Excel file does not exist: {EXCEL_FILE}")
+
     ensure_directories()
     setup_logging()
     set_publication_plot_style()
