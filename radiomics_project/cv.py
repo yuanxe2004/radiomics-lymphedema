@@ -402,10 +402,10 @@ def make_split_samples_df(analysis_label, task_name, data):
     """
     rows = []
     split_items = [
-        ("Train_center134_60percent", data.train_df),
-        ("Validation_center134_20percent", data.val_df),
-        ("Internal_test_center134_20percent", data.internal_test_df),
-        ("External_test_center2", data.external_df),
+        ("Train_development_60percent", data.train_df),
+        ("Validation_development_20percent", data.val_df),
+        ("Internal_test_development_20percent", data.internal_test_df),
+        ("External_test_independent", data.external_df),
     ]
     keep_cols = [col for col in [ID_COL, SIDE_COL, CENTER_COL, LABEL_COL] if col in data.task_df.columns]
 
@@ -418,7 +418,7 @@ def make_split_samples_df(analysis_label, task_name, data):
         tmp.insert(2, "数据集", split_name)
         tmp["随机种子"] = RANDOM_STATE
         tmp["划分方式"] = data.split_method
-        tmp["是否外部测试集"] = split_name == "External_test_center2"
+        tmp["是否外部测试集"] = split_name == "External_test_independent"
         rows.append(tmp)
 
     return pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
@@ -491,6 +491,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
         y_prob=internal_prob,
         positive_label=positive_label,
         labels_sorted=labels_sorted,
+        group_ids=data.internal_test_df[ID_COL].values if ID_COL in data.internal_test_df.columns else None,
         random_state=RANDOM_STATE + 100,
     )
 
@@ -500,6 +501,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
         y_prob=external_prob,
         positive_label=positive_label,
         labels_sorted=labels_sorted,
+        group_ids=data.external_df[ID_COL].values if ID_COL in data.external_df.columns else None,
         random_state=RANDOM_STATE + 200,
     )
 
@@ -540,7 +542,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
             task_name=task_name,
             feature_set_name=feature_set_name,
             model_name=model_name,
-            data_split="Train_center134_60percent",
+            data_split="Train_development_60percent",
             result_tag=result_tag,
             positive_label=positive_label,
         ),
@@ -553,7 +555,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
             task_name=task_name,
             feature_set_name=feature_set_name,
             model_name=model_name,
-            data_split="Validation_center134_20percent",
+            data_split="Validation_development_20percent",
             result_tag=result_tag,
             positive_label=positive_label,
         ),
@@ -566,7 +568,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
             task_name=task_name,
             feature_set_name=feature_set_name,
             model_name=model_name,
-            data_split="Internal_test_center134_20percent",
+            data_split="Internal_test_development_20percent",
             result_tag=result_tag,
             positive_label=positive_label,
         ),
@@ -579,7 +581,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
             task_name=task_name,
             feature_set_name=feature_set_name,
             model_name=model_name,
-            data_split="External_test_center2",
+            data_split="External_test_independent",
             result_tag=result_tag,
             positive_label=positive_label,
         ),
@@ -591,7 +593,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
         task_name=task_name,
         feature_set_name=feature_set_name,
         model_name=model_name,
-        dataset_name="Internal_test_center134_20percent",
+        dataset_name="Internal_test_development_20percent",
         data=data,
         class_a=class_a,
         class_b=class_b,
@@ -612,7 +614,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
 
     external_row = internal_row.copy()
     external_row.update({
-        "数据集": "External_test_center2",
+        "数据集": "External_test_independent",
         "样本量": len(data.external_df),
         **external_metrics,
     })
@@ -626,7 +628,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
         task_name=task_name,
         feature_set_name=feature_set_name,
         model_name=model_name,
-        data_split="Internal_test_center134_20percent",
+        data_split="Internal_test_development_20percent",
         result_tag=result_tag,
     )
 
@@ -639,7 +641,7 @@ def evaluate_final_model(analysis_label, data, class_a, class_b, feature_set_nam
         task_name=task_name,
         feature_set_name=feature_set_name,
         model_name=model_name,
-        data_split="External_test_center2",
+        data_split="External_test_independent",
         result_tag=result_tag,
     )
 
