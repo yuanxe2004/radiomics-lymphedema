@@ -216,3 +216,24 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data, generated analysis outputs, and trained artifacts
+data/
+datasets/
+outputs/
+output/
+results/
+plots/
+model_packages/
+*.xlsx
+*.xls
+*.csv
+*.tsv
+*.nii
+*.nii.gz
+*.dcm
+*.mha
+*.mhd
+*.nrrd
+*.joblib
+*.pkl
