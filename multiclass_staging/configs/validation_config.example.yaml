@@ -1,0 +1,7 @@
+# Prospective/external validation is usually run through scripts/validate_foresight.py.
+
+model_path: "C:/Users/ALIENWARE/Desktop/train_mould/code/radiomics/drawing/output/3-0/models/best_model_wrapper.joblib"
+input_excel: "F:/foresight/前瞻性数据_影像组学按标签分层校正后.xlsx"
+output_dir: "F:/foresight/output_multiclass_validation"
+label_col: "label"
+n_bootstrap: 1000
