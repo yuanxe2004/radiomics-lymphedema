@@ -1,0 +1,70 @@
+# Example configuration for multiclass CE-MRL radiomics + morphology staging.
+# Replace paths and column names before running.
+
+excel_file: "C:/Users/ALIENWARE/OneDrive/work/分类/final_deduplicated_with_new_morph-2.xlsx"
+output_dir: "C:/Users/ALIENWARE/Desktop/train_mould/code/radiomics/drawing/output/3-0"
+
+label_col: "标签"
+center_col: "对应中心"
+id_col: "序号"
+
+internal_center_value: "中心134"
+external_center_value: "中心2"
+
+labels: [1, 2, 3]
+label_names:
+  1: "Stage I"
+  2: "Stage II"
+  3: "Stage III"
+task_name: "Stage_1_vs_2_vs_3"
+
+random_state: 255
+n_splits: 5
+n_bootstrap: 1000
+bootstrap_seed: 2026
+use_group_split: true
+use_stratified_split: true
+
+remove_radiomics_shape_features: true
+auto_detect_morphology_by_keywords: true
+
+morphology_features:
+  - "muscle_volume_ratio"
+  - "bone_volume_ratio"
+  - "underskin_volume_ratio"
+  - "subcutaneous_volume_ratio"
+  - "muscle_CSA_ratio"
+  - "bone_CSA_ratio"
+  - "underskin_CSA_ratio"
+  - "subcutaneous_CSA_ratio"
+  - "volume_ratio"
+  - "CSA_ratio"
+  - "muscle_ratio"
+  - "bone_ratio"
+  - "underskin_ratio"
+
+anova_top_k: 50
+pearson_threshold_radiomics: 0.90
+pearson_threshold_morphology: 0.90
+lasso_c: 0.05
+lasso_max_iter: 20000
+min_features_after_lasso_fallback: 10
+combined_final_pearson: false
+
+feature_sets:
+  - "Radiomics_only"
+  - "Morphology_only"
+  - "Combined"
+model_names:
+  - "LR"
+  - "RF"
+  - "SVM"
+use_xgboost_if_available: true
+
+run_roc: true
+run_dca: true
+run_calibration: true
+run_shap: true
+shap_max_background: 80
+shap_max_cases: 150
+boxplot_top_n: 10
