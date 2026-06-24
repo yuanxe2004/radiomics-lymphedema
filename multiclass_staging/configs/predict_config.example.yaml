@@ -1,0 +1,6 @@
+# Prediction is usually run through scripts/predict_with_model.py.
+# This file documents the expected paths.
+
+model_path: "C:/Users/ALIENWARE/Desktop/train_mould/code/radiomics/drawing/output/3-0/models/best_model_wrapper.joblib"
+input_excel: "F:/foresight/前瞻性数据_影像组学按标签分层校正后.xlsx"
+output_excel: "F:/foresight/predictions_multiclass.xlsx"
